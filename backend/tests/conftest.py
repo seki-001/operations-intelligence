@@ -13,6 +13,7 @@ os.environ.update({
     "DATA_SOURCE": "csv",
     "CSV_PATH": str(ROOT / "data" / "synthetic_daily_ops.csv"),
     "AI_PROVIDER": "template",
+    "AUTO_SYNC_ON_STARTUP": "false",
 })
 
 from app.core import db  # noqa: E402

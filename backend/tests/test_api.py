@@ -75,3 +75,14 @@ def test_production_without_key_refuses(client, monkeypatch):
     from app.core.config import get_settings
     get_settings.cache_clear()
     assert TestClient(client.app).get("/api/sync/status").status_code == 503
+
+
+def test_startup_sync_fills_an_empty_database(engine, monkeypatch):
+    monkeypatch.setenv("AUTO_SYNC_ON_STARTUP", "true")
+    from app.core.config import get_settings
+    get_settings.cache_clear()
+    from app.main import app
+
+    with TestClient(app, headers={"X-API-Key": "test-key"}) as c:
+        assert c.get("/api/sync/status").json()["current"]["status"] == "success"
+        assert c.get("/api/overview").status_code == 200
