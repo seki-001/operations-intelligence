@@ -25,7 +25,7 @@ services:
       - key: AI_BASE_URL
         value: https://api.groq.com/openai/v1
       - key: AI_MODEL
-        value: llama-3.3-70b-versatile
+        value: openai/gpt-oss-120b
       - key: AI_API_KEY
         sync: false
       - key: CORS_ORIGINS
