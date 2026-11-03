@@ -1,0 +1,32 @@
+# Render blueprint for the API. Secrets are set in the Render dashboard (sync: false), never here.
+services:
+  - type: web
+    name: operations-intelligence-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATA_SOURCE
+        value: google_sheets_link   # demo: link-shared sheet. Use google_sheets + GOOGLE_SERVICE_ACCOUNT_JSON for real data
+      - key: GOOGLE_SHEET_GID
+        value: "0"
+      - key: GOOGLE_SHEET_ID
+        sync: false
+      - key: AI_PROVIDER
+        value: openai_compatible
+      - key: AI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: AI_MODEL
+        value: llama-3.3-70b-versatile
+      - key: AI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
