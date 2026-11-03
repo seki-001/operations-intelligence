@@ -30,3 +30,22 @@ services:
         sync: false
       - key: CORS_ORIGINS
         sync: false
+
+  # Dashboard. Gets the API key straight from the API service, so it is never copied by hand.
+  - type: web
+    name: operations-intelligence-dashboard
+    runtime: node
+    rootDir: frontend
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: API_URL
+        value: https://operations-intelligence-api.onrender.com
+      - key: API_KEY
+        fromService:
+          type: web
+          name: operations-intelligence-api
+          envVarKey: API_KEY
+      - key: NODE_VERSION
+        value: "20"
