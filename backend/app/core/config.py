@@ -37,6 +37,10 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:3000"
 
+    # Load data on startup when the database is empty (e.g. after a restart on hosting with
+    # ephemeral disks), so the dashboard never opens on an empty screen.
+    auto_sync_on_startup: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:
