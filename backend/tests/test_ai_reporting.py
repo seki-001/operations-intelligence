@@ -76,3 +76,20 @@ def test_code_fenced_json_is_accepted():
 def test_small_counts_are_not_claims():
     s = Summary([{"text": "3 sites need attention", "fact_ids": []}], [], [], "x", None, True)
     assert check_against_facts(s, FACTS).unverified_numbers == []
+
+
+def test_retries_without_json_mode_when_model_rejects_it():
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        calls.append("response_format" in body)
+        if "response_format" in body:
+            return httpx.Response(400, json={"error": "json mode not supported"})
+        content = json.dumps({"observations": [{"text": "ok", "fact_ids": ["F1"]}]})
+        return httpx.Response(200, json={"choices": [{"message": {"content": content}}]})
+
+    p = OpenAICompatibleProvider("https://llm.example/v1", "m", "k",
+                                 client=httpx.Client(transport=httpx.MockTransport(handler)))
+    s = summarise(FACTS, p)
+    assert calls == [True, False] and s.is_ai_generated is True
