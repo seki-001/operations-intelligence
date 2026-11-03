@@ -185,7 +185,7 @@ class OpenAICompatibleProvider:
         self.client = client
 
     def generate(self, facts: dict) -> Summary:
-        payload = {
+        payload: dict = {
             "model": self.model,
             "temperature": 0.2,
             "response_format": {"type": "json_object"},
@@ -198,6 +198,10 @@ class OpenAICompatibleProvider:
         client = self.client or httpx.Client(timeout=self.timeout)
         try:
             resp = client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
+            if resp.status_code == 400:
+                # Some models don't support JSON mode; the prompt still asks for JSON only.
+                payload.pop("response_format", None)
+                resp = client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
             resp.raise_for_status()
             content = resp.json()["choices"][0]["message"]["content"]
             data = json.loads(_strip_fences(content))
@@ -242,6 +246,8 @@ def summarise(facts: dict, provider: SummaryProvider) -> Summary:
     try:
         summary = provider.generate(facts)
     except (httpx.HTTPError, KeyError, ValueError, json.JSONDecodeError) as exc:
-        log.warning("AI summary failed, using template: %s", type(exc).__name__)
-        summary = TemplateProvider(fallback_reason=f"AI call failed ({type(exc).__name__})").generate(facts)
+        reason = (f"HTTP {exc.response.status_code}" if isinstance(exc, httpx.HTTPStatusError)
+                  else type(exc).__name__)
+        log.warning("AI summary failed, using template: %s", reason)
+        summary = TemplateProvider(fallback_reason=f"AI call failed ({reason})").generate(facts)
     return check_against_facts(summary, facts)
