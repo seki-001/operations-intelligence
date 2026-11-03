@@ -21,7 +21,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
       signal: AbortSignal.timeout(45_000),
     });
   } catch {
-    throw new ApiError(0, "The data service is unreachable.");
+    throw new ApiError(0, "The data service is waking up (free hosting sleeps when idle). Refresh in about a minute.");
   }
   if (!res.ok) {
     let detail = `Request failed (${res.status})`;
