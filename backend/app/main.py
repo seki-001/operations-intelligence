@@ -6,14 +6,34 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.core.config import get_settings
-from app.core.db import init_db
+from app.core.db import get_engine, init_db
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+log = logging.getLogger(__name__)
+
+
+def initial_sync() -> None:
+    """If there is no successful snapshot yet, sync once. Failures are recorded, never fatal."""
+    from sqlmodel import Session
+
+    from app.integrations.sources import SourceError, build_source
+    from app.services.sync import current_run, run_sync
+
+    with Session(get_engine()) as session:
+        if current_run(session) is not None:
+            return
+        try:
+            run = run_sync(session, build_source(get_settings()))
+            log.info("startup sync: %s", run.status)
+        except SourceError as exc:
+            log.warning("startup sync skipped: %s", exc)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
+    if get_settings().auto_sync_on_startup:
+        initial_sync()
     yield
 
 
