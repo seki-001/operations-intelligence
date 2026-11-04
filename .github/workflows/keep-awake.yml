@@ -1,0 +1,33 @@
+# Keeps the free Render demo awake during the review period, so the first
+# visit doesn't hit a cold start. Runs every 10 minutes from 07:00 to 22:00
+# Nairobi time (04:00-19:00 UTC) and stops doing anything after END_DATE.
+# Delete this file when the review period is over.
+name: Keep demo awake
+
+on:
+  schedule:
+    - cron: "*/10 4-18 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  END_DATE: "2026-11-18"
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping API and dashboard
+        run: |
+          if [ "$(date -u +%F)" \> "$END_DATE" ]; then
+            echo "Review period over ($END_DATE); nothing to do."
+            exit 0
+          fi
+          for url in \
+            https://operations-intelligence-api.onrender.com/health \
+            https://operations-intelligence-dashboard.onrender.com/; do
+            code=$(curl -s -o /dev/null -m 120 -w '%{http_code}' "$url" || true)
+            echo "$url -> $code"
+          done
