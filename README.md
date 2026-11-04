@@ -9,6 +9,10 @@ A small, working internal tool that turns a shared operations spreadsheet into a
 **Live demo:** https://operations-intelligence-dashboard.onrender.com
 (free hosting: the first load after a quiet period can take up to a minute while it wakes)
 
+![Dashboard overview: portfolio indicators compared with the previous week](docs/screenshot-overview.webp)
+
+![Rule-based findings next to an AI briefing that cites a fact for every statement and waits for a named reviewer](docs/screenshot-briefing.webp)
+
 ### Try it in 60 seconds
 
 1. Open the live demo. It has already read the demo Google Sheet.

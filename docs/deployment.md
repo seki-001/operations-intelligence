@@ -45,7 +45,7 @@ provider that has an OpenAI-compatible API, for example:
 
 | Provider | AI_BASE_URL | Example AI_MODEL |
 |---|---|---|
-| Groq | `https://api.groq.com/openai/v1` | `llama-3.3-70b-versatile` |
+| Groq | `https://api.groq.com/openai/v1` | `openai/gpt-oss-120b` |
 | Google AI Studio | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-2.0-flash` |
 | Ollama (local) | `http://localhost:11434/v1` | `llama3.2` |
 

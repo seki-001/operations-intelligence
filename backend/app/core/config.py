@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # AI summary provider. "template" uses no model and is labelled as such everywhere.
     ai_provider: Literal["template", "openai_compatible"] = "template"
     ai_base_url: str = "https://api.groq.com/openai/v1"
-    ai_model: str = "llama-3.3-70b-versatile"
+    ai_model: str = "openai/gpt-oss-120b"
     ai_api_key: str = ""
     ai_timeout_seconds: float = 30.0
 
